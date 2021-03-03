@@ -50,9 +50,9 @@ func NewNotionAPI(conf *Conf) *API {
 	return &api
 }
 
-// Name index data name.
-func (a *API) Name() string {
-	return "Notion"
+// Type index type name.
+func (a *API) Type() string {
+	return es.TypeNotion
 }
 
 // FetchIndex index
