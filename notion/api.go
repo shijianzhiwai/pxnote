@@ -20,7 +20,7 @@ const (
 
 // API notion API:
 // - get pages in all spaces
-// - return pages index info
+// - return pages index data
 type API struct {
 	Client     *notionapi.Client
 	HTTPClient *http.Client
@@ -72,7 +72,7 @@ func (a *API) FetchIndex() ([]es.NoteIndex, error) {
 	return allNoteIndex, nil
 }
 
-// GetPageIndexData get notion page content index data with sub page by ID.
+// GetPageIndexData get index data of notion page and subpage by page ID.
 func (a *API) GetPageIndexData(id string) ([]es.NoteIndex, error) {
 	page, err := a.Client.DownloadPage(id)
 	if err != nil {
@@ -84,7 +84,7 @@ func (a *API) GetPageIndexData(id string) ([]es.NoteIndex, error) {
 	)
 	notes := make([]es.NoteIndex, 0)
 	page.ForEachBlock(func(block *notionapi.Block) {
-		if ind == 0 && block.Type == "page" {
+		if ind == 0 && block.Type == notionapi.BlockPage {
 			title = block.Title
 		}
 		b := es.NoteIndex{
@@ -123,7 +123,7 @@ func (a *API) GetPageIndexData(id string) ([]es.NoteIndex, error) {
 	return notes, nil
 }
 
-// GetAllRootPagesID get notion all root pages ID.
+// GetAllRootPagesID get all root pages ID of notion.
 func (a *API) GetAllRootPagesID() ([]string, error) {
 	resp, err := a.LoadUserContent()
 	if err != nil {
@@ -159,7 +159,7 @@ func (a *API) doNotionAPI(apiURL string, requestData interface{}, result interfa
 	uri := notionHost + apiURL
 	body := bytes.NewBuffer(js)
 
-	req, err := http.NewRequest("POST", uri, body)
+	req, err := http.NewRequest(http.MethodPost, uri, body)
 	if err != nil {
 		return err
 	}
